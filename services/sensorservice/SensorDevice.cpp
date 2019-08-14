@@ -38,6 +38,7 @@
 #include <cstddef>
 #include <thread>
 
+#include <android-base/properties.h>
 using namespace android::hardware::sensors;
 using android::util::ProtoOutputStream;
 
@@ -76,6 +77,8 @@ SensorDevice::SensorDevice() {
 }
 
 void SensorDevice::initializeSensorList() {
+    if(::android::base::GetBoolProperty("persist.sys.phh.samsung_sensors", false))
+        setMode(5555);
     if (mHalWrapper == nullptr) {
         return;
     }
