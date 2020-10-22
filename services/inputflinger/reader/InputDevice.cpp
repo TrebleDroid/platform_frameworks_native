@@ -304,7 +304,10 @@ std::list<NotifyArgs> InputDevice::configureInternal(nsecs_t when,
                 }
             }
             // Find the display port that corresponds to the current input port.
-            const std::string& inputPort = mIdentifier.location;
+            std::string inputPort = mIdentifier.location;
+            if (inputPort.empty()) {
+                inputPort = mIdentifier.uniqueId;
+            }
             if (!inputPort.empty()) {
                 const std::unordered_map<std::string, uint8_t>& ports =
                         readerConfig.inputPortToDisplayPortAssociations;
