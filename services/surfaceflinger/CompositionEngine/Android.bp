@@ -38,6 +38,7 @@ cc_defaults {
         "libtimestats",
         "libui",
         "libutils",
+        "vendor.samsung.hardware.miscpower@2.0",
     ],
     static_libs: [
         "libmath",
