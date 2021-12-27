@@ -27,6 +27,7 @@
 #include <android/hardware/power/1.2/IPower.h>
 #include <android/hardware/power/1.3/IPower.h>
 #include <binder/Status.h>
+#include <vendor/samsung/hardware/miscpower/2.0/ISehMiscPower.h>
 
 #include <utility>
 
@@ -278,8 +279,10 @@ protected:
 // Wrapper for the AIDL Power HAL.
 class AidlHalWrapper : public EmptyHalWrapper {
 public:
-    explicit AidlHalWrapper(std::shared_ptr<aidl::android::hardware::power::IPower> handle)
-          : mHandle(std::move(handle)) {}
+    explicit AidlHalWrapper(std::shared_ptr<aidl::android::hardware::power::IPower> handle,
+            sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> sehHandle)
+          : mHandle(std::move(handle)),
+            mHandleSeh(std::move(sehHandle)) {}
     ~AidlHalWrapper() override = default;
 
     HalResult<void> setBoost(aidl::android::hardware::power::Boost boost,
@@ -307,6 +310,7 @@ private:
     std::mutex mBoostMutex;
     std::mutex mModeMutex;
     std::shared_ptr<aidl::android::hardware::power::IPower> mHandle;
+    sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> mHandleSeh;
     // Android framework only sends boost upto DISPLAY_UPDATE_IMMINENT.
     // Need to increase the array size if more boost supported.
     std::array<
@@ -319,6 +323,34 @@ private:
                        *(ndk::enum_range<aidl::android::hardware::power::Mode>().end() - 1)) +
                        1>
             mModeSupportedArray GUARDED_BY(mModeMutex) = {HalSupport::UNKNOWN};
+};
+
+class HidlHalWrapperSeh : public EmptyHalWrapper {
+public:
+    explicit HidlHalWrapperSeh(sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> hal1,
+            sp<android::hardware::power::V1_1::IPower> hal2,
+            sp<android::hardware::power::V1_0::IPower> hal3)
+    : mHandleSeh(std::move(hal1)),
+        mHandle11(std::move(hal2)),
+        mHandle10(std::move(hal3)) {}
+    ~HidlHalWrapperSeh() = default;
+
+    HalResult<void> setBoost(aidl::android::hardware::power::Boost boost, int32_t durationMs) override;
+    HalResult<void> setMode(aidl::android::hardware::power::Mode mode, bool enabled) override;
+    HalResult<std::shared_ptr<aidl::android::hardware::power::IPowerHintSession>> createHintSession(
+            int32_t tgid, int32_t uid, const std::vector<int32_t>& threadIds,
+            int64_t durationNanos) override;
+    HalResult<int64_t> getHintSessionPreferredRate() override;
+
+protected:
+    HalResult<void> sendPowerHint(hardware::power::V1_0::PowerHint hintId, uint32_t data);
+
+private:
+    sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> mHandleSeh;
+    sp<android::hardware::power::V1_1::IPower> mHandle11;
+    sp<android::hardware::power::V1_0::IPower> mHandle10;
+    HalResult<void> setInteractive(bool enabled);
+    HalResult<void> setFeature(hardware::power::V1_0::Feature feature, bool enabled);
 };
 
 }; // namespace power
