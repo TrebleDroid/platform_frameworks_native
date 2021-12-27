@@ -39,6 +39,7 @@ cc_defaults {
         "libSurfaceFlingerProp",
         "libui",
         "libutils",
+        "vendor.samsung.hardware.miscpower@2.0",
     ],
     static_libs: [
         "liblayers_proto",

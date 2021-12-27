@@ -20,6 +20,7 @@
 #include <aidl/android/hardware/power/IPowerHintSession.h>
 #include <aidl/android/hardware/power/Mode.h>
 #include <android/hardware/power/1.1/IPower.h>
+#include <vendor/samsung/hardware/miscpower/2.0/ISehMiscPower.h>
 #include <powermanager/PowerHalController.h>
 #include <powermanager/PowerHalLoader.h>
 #include <utils/Log.h>
@@ -33,19 +34,25 @@ namespace power {
 // -------------------------------------------------------------------------------------------------
 
 std::unique_ptr<HalWrapper> HalConnector::connect() {
+    sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> halHidlSeh = PowerHalLoader::loadHidlSeh();
     if (std::shared_ptr<aidl::android::hardware::power::IPower> halAidl =
                 PowerHalLoader::loadAidl()) {
-        return std::make_unique<AidlHalWrapper>(halAidl);
+        return std::make_unique<AidlHalWrapper>(halAidl, halHidlSeh);
     }
     // If V1_0 isn't defined, none of them are
-    if (sp<V1_0::IPower> halHidlV1_0 = PowerHalLoader::loadHidlV1_0()) {
+    sp<V1_0::IPower> halHidlV1_0 = PowerHalLoader::loadHidlV1_0();
+    sp<V1_1::IPower> halHidlV1_1 = PowerHalLoader::loadHidlV1_1();
+    if (halHidlSeh) {
+        return std::make_unique<HidlHalWrapperSeh>(halHidlSeh, halHidlV1_1, halHidlV1_0);
+    }
+    if (halHidlV1_0) {
         if (sp<V1_3::IPower> halHidlV1_3 = PowerHalLoader::loadHidlV1_3()) {
             return std::make_unique<HidlHalWrapperV1_3>(halHidlV1_3);
         }
         if (sp<V1_2::IPower> halHidlV1_2 = PowerHalLoader::loadHidlV1_2()) {
             return std::make_unique<HidlHalWrapperV1_2>(halHidlV1_2);
         }
-        if (sp<V1_1::IPower> halHidlV1_1 = PowerHalLoader::loadHidlV1_1()) {
+        if (halHidlV1_1) {
             return std::make_unique<HidlHalWrapperV1_1>(halHidlV1_1);
         }
         return std::make_unique<HidlHalWrapperV1_0>(halHidlV1_0);

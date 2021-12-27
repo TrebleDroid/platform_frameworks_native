@@ -22,6 +22,7 @@
 #include <android/hardware/power/1.1/IPower.h>
 #include <android/hardware/power/1.2/IPower.h>
 #include <android/hardware/power/1.3/IPower.h>
+#include <vendor/samsung/hardware/miscpower/2.0/ISehMiscPower.h>
 
 namespace android {
 
@@ -36,6 +37,7 @@ public:
     static sp<hardware::power::V1_1::IPower> loadHidlV1_1();
     static sp<hardware::power::V1_2::IPower> loadHidlV1_2();
     static sp<hardware::power::V1_3::IPower> loadHidlV1_3();
+    static sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> loadHidlSeh();
     // Returns aidl interface version, or 0 if AIDL is not used
     static int32_t getAidlVersion();
 
@@ -46,6 +48,7 @@ private:
     static sp<hardware::power::V1_1::IPower> gHalHidlV1_1 GUARDED_BY(gHalMutex);
     static sp<hardware::power::V1_2::IPower> gHalHidlV1_2 GUARDED_BY(gHalMutex);
     static sp<hardware::power::V1_3::IPower> gHalHidlV1_3 GUARDED_BY(gHalMutex);
+    static sp<vendor::samsung::hardware::miscpower::V2_0::ISehMiscPower> gHalHidlSeh GUARDED_BY(gHalMutex);
 
     static sp<hardware::power::V1_0::IPower> loadHidlV1_0Locked()
             EXCLUSIVE_LOCKS_REQUIRED(gHalMutex);
