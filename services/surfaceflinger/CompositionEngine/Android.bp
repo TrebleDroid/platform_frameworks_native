@@ -38,6 +38,7 @@ cc_defaults {
         "libui",
         "libutils",
         "server_configurable_flags",
+        "vendor.samsung.hardware.miscpower@2.0",
     ],
     static_libs: [
         "liblayers_proto",
