@@ -56,6 +56,16 @@ std::shared_ptr<HalWrapper> connectHal(std::shared_ptr<CallbackScheduler> schedu
         }
     }
 
+    serviceName = std::string(IVibrator::descriptor) + "/vibratorfeature";
+    if (AServiceManager_isDeclared(serviceName.c_str())) {
+        std::shared_ptr<IVibrator> hal = IVibrator::fromBinder(
+                ndk::SpAIBinder(AServiceManager_waitForService(serviceName.c_str())));
+        if (hal) {
+            ALOGV("Successfully connected to Xiaomi Vibrator HAL AIDL service.");
+            return std::make_shared<AidlHalWrapper>(std::move(scheduler), std::move(hal));
+        }
+    }
+
     ALOGV("Vibrator HAL service not available.");
     gHalExists = false;
     return nullptr;
