@@ -225,6 +225,9 @@ public:
                                         const std::vector<IComposerClient::Rect>& visible) = 0;
     virtual Error setLayerZOrder(Display display, Layer layer, uint32_t z) = 0;
 
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
+
     // Composer HAL 2.2
     virtual Error setLayerPerFrameMetadata(
             Display display, Layer layer,

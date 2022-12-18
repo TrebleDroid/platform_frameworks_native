@@ -393,6 +393,9 @@ public:
     [[nodiscard]] virtual hal::Error setVisibleRegion(const android::Region& region) = 0;
     [[nodiscard]] virtual hal::Error setZOrder(uint32_t z) = 0;
 
+    // Proprietary extensions
+    [[nodiscard]] virtual hal::Error setLayerClass(uint32_t layerClass) = 0;
+
     // Composer HAL 2.3
     [[nodiscard]] virtual hal::Error setColorTransform(const android::mat4& matrix) = 0;
 
@@ -447,6 +450,9 @@ public:
     hal::Error setTransform(hal::Transform transform) override;
     hal::Error setVisibleRegion(const android::Region& region) override;
     hal::Error setZOrder(uint32_t z) override;
+
+    // Proprietary extensions
+    hal::Error setLayerClass(uint32_t layerClass) override;
 
     // Composer HAL 2.3
     hal::Error setColorTransform(const android::mat4& matrix) override;

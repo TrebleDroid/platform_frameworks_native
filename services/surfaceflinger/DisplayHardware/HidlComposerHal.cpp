@@ -898,6 +898,13 @@ Error HidlComposer::setLayerZOrder(Display display, Layer layer, uint32_t z) {
     return Error::NONE;
 }
 
+Error HidlComposer::setLayerClass(Display display, Layer layer, uint32_t layerClass) {
+    mWriter.selectDisplay(display);
+    mWriter.selectLayer(layer);
+    mWriter.vendor800_1(layerClass);
+    return Error::NONE;
+}
+
 Error HidlComposer::execute() {
     // prepare input command queue
     bool queueChanged = false;

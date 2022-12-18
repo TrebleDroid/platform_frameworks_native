@@ -41,6 +41,7 @@
 
 #include <private/gui/ComposerService.h>
 #include <private/gui/ComposerServiceAIDL.h>
+#include <cutils/properties.h>
 
 #include <android-base/thread_annotations.h>
 
@@ -48,6 +49,14 @@
 
 using namespace com::android::graphics::libgui;
 using namespace std::chrono_literals;
+
+static bool sCheckedProps = false;
+static bool sSamsungFod = false;
+static void init_fod_props() {
+    if(sCheckedProps) return;
+    sCheckedProps = true;
+    sSamsungFod = property_get_bool("persist.sys.phh.fod.samsung", false);
+}
 
 namespace {
 
@@ -194,10 +203,17 @@ void BLASTBufferItemConsumer::resizeFrameEventHistory(size_t newSize) {
 void BLASTBufferQueue::initialize() {
     std::lock_guard _lock{mMutex};
     createBufferQueue(&mProducer, &mConsumer);
+    uint64_t usage = GraphicBuffer::USAGE_HW_COMPOSER |
+        GraphicBuffer::USAGE_HW_TEXTURE;
+
+    init_fod_props();
+    if(sSamsungFod && mName.find("SurfaceView[UdfpsControllerOverlay]") != std::string::npos) {
+           usage |= 0x400000000LL;
+    }
+
     mBufferItemConsumer =
             sp<BLASTBufferItemConsumer>::make(mProducer, mConsumer,
-                                              GraphicBuffer::USAGE_HW_COMPOSER |
-                                                      GraphicBuffer::USAGE_HW_TEXTURE,
+                                              usage,
                                               1, false, wp<BLASTBufferQueue>::fromExisting(this));
     // since the adapter is in the client process, set dequeue timeout
     // explicitly so that dequeueBuffer will block
