@@ -1126,5 +1126,12 @@ Error AidlComposer::getPhysicalDisplayOrientation(Display displayId,
     return Error::NONE;
 }
 
+Error AidlComposer::setLayerClass(Display display, Layer layer, uint32_t layerClass) {
+    (void) display;
+    (void) layer;
+    (void) layerClass;
+    return Error::NONE;
+}
+
 } // namespace Hwc2
 } // namespace android
