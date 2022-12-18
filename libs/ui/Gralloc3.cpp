@@ -99,7 +99,6 @@ status_t Gralloc3Mapper::validateBufferDescriptorInfo(
     if (descriptorInfo->usage & ~validUsageBits) {
         ALOGE("buffer descriptor contains invalid usage bits 0x%" PRIx64,
               descriptorInfo->usage & ~validUsageBits);
-        return BAD_VALUE;
     }
 
     // Gralloc3 implementations never understand non-BLOB with GPU_DATA_BUFFER
