@@ -281,6 +281,9 @@ public:
     virtual Error setIdleTimerEnabled(Display displayId, std::chrono::milliseconds timeout) = 0;
     virtual Error getPhysicalDisplayOrientation(Display displayId,
                                                 AidlTransform* outDisplayOrientation) = 0;
+
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
 };
 
 } // namespace Hwc2

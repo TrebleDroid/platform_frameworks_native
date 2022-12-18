@@ -472,6 +472,7 @@ status_t BufferQueueLayer::setDefaultBufferProperties(uint32_t w, uint32_t h, Pi
     setDefaultBufferSize(w, h);
     mConsumer->setDefaultBufferFormat(format);
     mConsumer->setConsumerUsageBits(getEffectiveUsage(0));
+    ALOGE("bufferqueuelayer -- name %s", mName.c_str());
 
     return NO_ERROR;
 }
