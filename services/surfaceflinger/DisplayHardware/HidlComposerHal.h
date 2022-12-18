@@ -360,6 +360,8 @@ public:
     Error setDisplayPictureProfileId(Display, PictureProfileId) override;
     Error setLayerPictureProfileId(Display, Layer, PictureProfileId) override;
 
+    // Proprietary extensions
+    Error setLayerClass(Display display, Layer layer, uint32_t layerClass) override;
 private:
     class CommandWriter : public CommandWriterBase {
     public:
