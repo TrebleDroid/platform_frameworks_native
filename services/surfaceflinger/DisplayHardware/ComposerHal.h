@@ -291,6 +291,9 @@ public:
     virtual Error setHdrConversionStrategy(
             ::aidl::android::hardware::graphics::common::HdrConversionStrategy, Hdr*) = 0;
     virtual Error setRefreshRateChangedCallbackDebugEnabled(Display, bool) = 0;
+
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
 };
 
 } // namespace Hwc2
