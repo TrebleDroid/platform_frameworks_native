@@ -303,6 +303,9 @@ public:
     virtual Error setRefreshRateChangedCallbackDebugEnabled(Display, bool) = 0;
     virtual Error notifyExpectedPresent(Display, nsecs_t expectedPresentTime,
                                         int32_t frameIntervalNs) = 0;
+
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
 };
 
 } // namespace Hwc2

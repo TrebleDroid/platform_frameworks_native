@@ -26,6 +26,7 @@
 #include "system/graphics-base-v1.0.h"
 
 #include <ui/HdrRenderTypeUtils.h>
+#include <cutils/properties.h>
 
 // TODO(b/129481165): remove the #pragma below and fix conversion issues
 #pragma clang diagnostic push
@@ -35,6 +36,9 @@
 
 // TODO(b/129481165): remove the #pragma below and fix conversion issues
 #pragma clang diagnostic pop // ignored "-Wconversion"
+
+static bool sCheckedProps = false;
+static bool sAsusFod = false;
 
 using aidl::android::hardware::graphics::composer3::Composition;
 
@@ -439,6 +443,26 @@ void OutputLayer::writeOutputDependentGeometryStateToHWC(HWC2::Layer* hwcLayer,
                                                      ->getWidth()),
                           static_cast<float>(outputDependentState.overrideInfo.buffer->getBuffer()
                                                      ->getHeight()));
+    }
+
+    if(!sCheckedProps) {
+        sCheckedProps = true;
+        sAsusFod = property_get_bool("persist.sys.phh.fod.asus", false);
+    }
+
+    if (strstr(getLayerFE().getDebugName(), "UdfpsControllerOverlay#") != nullptr) {
+        if (sAsusFod) {
+            if (auto error = hwcLayer->setLayerClass(5); error != hal::Error::NONE) {
+                ALOGE("Failed setting Asus layer class");
+            }
+        }
+    }
+    if (strstr(getLayerFE().getDebugName(), "SurfaceView[UdfpsControllerOverlay](BLAST)#") != nullptr) {
+        if (sAsusFod) {
+            if (auto error = hwcLayer->setLayerClass(4); error != hal::Error::NONE) {
+                ALOGE("Failed setting Asus layer class");
+            }
+        }
     }
 
     ALOGV("Writing display frame [%d, %d, %d, %d]", displayFrame.left, displayFrame.top,
