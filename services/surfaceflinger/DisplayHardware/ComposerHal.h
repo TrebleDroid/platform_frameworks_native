@@ -313,6 +313,9 @@ public:
     virtual Error getMaxLayerPictureProfiles(Display display, int32_t* outMaxProfiles) = 0;
     virtual Error setDisplayPictureProfileId(Display display, PictureProfileId id) = 0;
     virtual Error setLayerPictureProfileId(Display display, Layer layer, PictureProfileId id) = 0;
+
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
 };
 
 } // namespace Hwc2
