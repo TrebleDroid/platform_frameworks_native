@@ -254,6 +254,8 @@ public:
     Error getLuts(Display, const std::vector<sp<GraphicBuffer>>&,
                   std::vector<aidl::android::hardware::graphics::composer3::Luts>*) override;
 
+    // Proprietary extensions
+    Error setLayerClass(Display display, Layer layer, uint32_t layerClass) override;
 private:
     // Many public functions above simply write a command into the command
     // queue to batch the calls.  validateDisplay and presentDisplay will call

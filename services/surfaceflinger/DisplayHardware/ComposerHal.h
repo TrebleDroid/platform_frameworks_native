@@ -321,6 +321,9 @@ public:
                                        const aidl::android::hardware::drm::HdcpLevels& levels) = 0;
     virtual Error getLuts(Display display, const std::vector<sp<GraphicBuffer>>&,
                           std::vector<V3_0::Luts>*) = 0;
+
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
 };
 
 } // namespace Hwc2

@@ -41,6 +41,7 @@
 
 #include <private/gui/ComposerService.h>
 #include <private/gui/ComposerServiceAIDL.h>
+#include <cutils/properties.h>
 
 #include <android-base/thread_annotations.h>
 
@@ -48,6 +49,14 @@
 
 using namespace com::android::graphics::libgui;
 using namespace std::chrono_literals;
+
+static bool sCheckedProps = false;
+static bool sSamsungFod = false;
+static void init_fod_props() {
+    if(sCheckedProps) return;
+    sCheckedProps = true;
+    sSamsungFod = property_get_bool("persist.sys.phh.fod.samsung", false);
+}
 
 namespace {
 
@@ -196,15 +205,21 @@ BLASTBufferQueue::BLASTBufferQueue(const std::string& name, bool updateDestinati
         mSyncTransaction(nullptr),
         mUpdateDestinationFrame(updateDestinationFrame) {
     createBufferQueue(&mProducer, &mConsumer);
+    uint64_t usage = GraphicBuffer::USAGE_HW_COMPOSER |
+        GraphicBuffer::USAGE_HW_TEXTURE;
+
+    init_fod_props();
+    if(sSamsungFod && name.find("SurfaceView[UdfpsControllerOverlay]") != std::string::npos) {
+           usage |= 0x400000000LL;
+    }
+
 #if COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(WB_CONSUMER_BASE_OWNS_BQ)
     mBufferItemConsumer = sp<BLASTBufferItemConsumer>::make(mProducer, mConsumer,
-                                                            GraphicBuffer::USAGE_HW_COMPOSER |
-                                                                    GraphicBuffer::USAGE_HW_TEXTURE,
+                                                            usage,
                                                             1, false, this);
 #else
     mBufferItemConsumer = sp<BLASTBufferItemConsumer>::make(mConsumer,
-                                                            GraphicBuffer::USAGE_HW_COMPOSER |
-                                                                    GraphicBuffer::USAGE_HW_TEXTURE,
+                                                            usage,
                                                             1, false, this);
 #endif //  COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(WB_CONSUMER_BASE_OWNS_BQ)
     // since the adapter is in the client process, set dequeue timeout

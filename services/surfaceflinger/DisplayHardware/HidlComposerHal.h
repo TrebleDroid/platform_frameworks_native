@@ -367,6 +367,8 @@ public:
     Error getLuts(Display, const std::vector<sp<GraphicBuffer>>&,
                   std::vector<aidl::android::hardware::graphics::composer3::Luts>*) override;
 
+    // Proprietary extensions
+    Error setLayerClass(Display display, Layer layer, uint32_t layerClass) override;
 private:
     class CommandWriter : public CommandWriterBase {
     public:
