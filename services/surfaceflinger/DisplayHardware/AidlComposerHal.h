@@ -252,6 +252,8 @@ public:
             Display display, Layer layer,
             std::vector<aidl::android::hardware::graphics::composer3::Lut>& luts) override;
 
+    // Proprietary extensions
+    Error setLayerClass(Display display, Layer layer, uint32_t layerClass) override;
 private:
     // Many public functions above simply write a command into the command
     // queue to batch the calls.  validateDisplay and presentDisplay will call

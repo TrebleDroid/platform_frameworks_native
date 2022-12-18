@@ -1065,6 +1065,14 @@ Error Layer::setLuts(std::vector<Lut>& luts) {
     return static_cast<Error>(intError);
 }
 
+Error Layer::setLayerClass(uint32_t layerClass) {
+    if (CC_UNLIKELY(!mDisplay)) {
+        return Error::BAD_DISPLAY;
+    }
+    auto intError = mComposer.setLayerClass(mDisplay->getId(), mId, layerClass);
+    return static_cast<Error>(intError);
+}
+
 } // namespace impl
 } // namespace HWC2
 } // namespace android

@@ -370,6 +370,9 @@ public:
     [[nodiscard]] virtual hal::Error setBlockingRegion(const android::Region& region) = 0;
     [[nodiscard]] virtual hal::Error setLuts(
             std::vector<aidl::android::hardware::graphics::composer3::Lut>& luts) = 0;
+
+    // Proprietary HAL
+    [[nodiscard]] virtual hal::Error setLayerClass(uint32_t layerClass) = 0;
 };
 
 namespace impl {
@@ -423,6 +426,8 @@ public:
     hal::Error setLuts(
             std::vector<aidl::android::hardware::graphics::composer3::Lut>& luts) override;
 
+    // Proprietary HAL
+    hal::Error setLayerClass(uint32_t layerClass) override;
 private:
     // These are references to data owned by HWComposer, which will outlive
     // this HWC2::Layer, so these references are guaranteed to be valid for

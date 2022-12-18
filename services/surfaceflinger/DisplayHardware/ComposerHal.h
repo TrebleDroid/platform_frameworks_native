@@ -308,6 +308,9 @@ public:
     virtual Error getRequestedLuts(Display display,
                                    std::vector<V3_0::DisplayLuts::LayerLut>* outLuts) = 0;
     virtual Error setLayerLuts(Display display, Layer layer, std::vector<V3_0::Lut>& luts) = 0;
+
+    // Proprietary extensions
+    virtual Error setLayerClass(Display display, Layer layer, uint32_t layerClass) = 0;
 };
 
 } // namespace Hwc2

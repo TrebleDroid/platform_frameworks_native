@@ -358,6 +358,8 @@ public:
     Error setLayerLuts(Display, Layer,
                        std::vector<aidl::android::hardware::graphics::composer3::Lut>&) override;
 
+    // Proprietary extensions
+    Error setLayerClass(Display display, Layer layer, uint32_t layerClass) override;
 private:
     class CommandWriter : public CommandWriterBase {
     public:
