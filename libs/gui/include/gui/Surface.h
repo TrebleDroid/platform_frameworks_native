@@ -638,6 +638,9 @@ protected:
 
     // Buffers that are successfully dequeued/attached and handed to clients
     std::unordered_set<int> mDequeuedSlots;
+
+    pid_t mPid;
+    bool mIsSurfaceFlinger;
 };
 
 } // namespace android
