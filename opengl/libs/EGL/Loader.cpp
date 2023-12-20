@@ -262,8 +262,7 @@ void* Loader::open(egl_connection_t* cnx)
         hnd = attempt_to_load_system_driver(cnx, nullptr, true);
     }
 
-    if (!hnd && !failToLoadFromDriverSuffixProperty &&
-        property_get_int32("ro.vendor.api_level", 0) < __ANDROID_API_U__) {
+    if (!hnd) {
         // Still can't find the graphics drivers with the exact name. This time try to use wildcard
         // matching if the device is launched before Android 14.
         hnd = attempt_to_load_system_driver(cnx, nullptr, false);
