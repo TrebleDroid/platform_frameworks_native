@@ -1037,7 +1037,7 @@ int32_t EventHub::getKeyCodeForKeyLocation(int32_t deviceId, int32_t locationKey
 }
 
 int32_t EventHub::getSwitchState(int32_t deviceId, int32_t sw) const {
-    if (sw >= 0 && sw <= SW_MAX) {
+    if (sw >= 0 && sw <= (SW_MAX * 4)) {
         std::scoped_lock _l(mLock);
 
         Device* device = getDeviceLocked(deviceId);
@@ -2349,7 +2349,7 @@ void EventHub::openDeviceLocked(const std::string& devicePath) {
     }
 
     // Check whether this device has switches.
-    for (int i = 0; i <= SW_MAX; i++) {
+    for (int i = 0; i <= (SW_MAX * 4); i++) {
         if (device->swBitmask.test(i)) {
             device->classes |= InputDeviceClass::SWITCH;
             break;
