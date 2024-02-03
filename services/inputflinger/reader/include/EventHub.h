@@ -604,8 +604,8 @@ private:
         BitArray<KEY_MAX> keyState;
         BitArray<ABS_MAX> absBitmask;
         BitArray<REL_MAX> relBitmask;
-        BitArray<SW_MAX> swBitmask;
-        BitArray<SW_MAX> swState;
+        BitArray<SW_MAX * 4> swBitmask;
+        BitArray<SW_MAX * 4> swState;
         BitArray<LED_MAX> ledBitmask;
         BitArray<FF_MAX> ffBitmask;
         BitArray<INPUT_PROP_MAX> propBitmask;
