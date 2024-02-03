@@ -640,8 +640,8 @@ private:
         BitArray<KEY_CNT> keyBitmask;
         BitArray<KEY_CNT> keyState;
         BitArray<REL_CNT> relBitmask;
-        BitArray<SW_CNT> swBitmask;
-        BitArray<SW_CNT> swState;
+        BitArray<SW_CNT * 4> swBitmask;
+        BitArray<SW_CNT * 4> swState;
         BitArray<LED_CNT> ledBitmask;
         BitArray<FF_CNT> ffBitmask;
         BitArray<INPUT_PROP_CNT> propBitmask;
