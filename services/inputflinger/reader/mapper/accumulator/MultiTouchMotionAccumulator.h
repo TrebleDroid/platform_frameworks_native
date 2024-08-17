@@ -30,6 +30,8 @@ class MultiTouchMotionAccumulator {
 public:
     class Slot {
     public:
+        Slot();
+
         inline bool isInUse() const { return mInUse; }
         inline int32_t getX() const { return mAbsMtPositionX; }
         inline int32_t getY() const { return mAbsMtPositionY; }
@@ -66,6 +68,8 @@ public:
         int32_t mAbsMtPressure = 0;
         int32_t mAbsMtDistance = 0;
         int32_t mAbsMtToolType = 0;
+
+        int32_t mAbsMtPositionXYRatio = 1;
 
         void clear() { *this = Slot(); }
         void populateAxisValue(int32_t axisCode, int32_t value);
