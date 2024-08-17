@@ -48,6 +48,8 @@ private:
     int32_t mAbsTiltX;
     int32_t mAbsTiltY;
 
+    int32_t mAbsXYRatio = 1;
+
     void clearAbsoluteAxes();
 };
 
