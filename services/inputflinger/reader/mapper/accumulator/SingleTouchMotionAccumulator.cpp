@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <android-base/properties.h>
+
 #include "SingleTouchMotionAccumulator.h"
 
 #include "EventHub.h"
@@ -23,11 +25,16 @@ namespace android {
 
 SingleTouchMotionAccumulator::SingleTouchMotionAccumulator() {
     clearAbsoluteAxes();
+
+    std::string targetDevice = android::base::GetProperty("ro.product.vendor.device", "");
+    if (targetDevice == "meizu21" || targetDevice == "Meizu21Note") {
+        mAbsXYRatio = 10;
+    }
 }
 
 void SingleTouchMotionAccumulator::reset(InputDeviceContext& deviceContext) {
-    mAbsX = deviceContext.getAbsoluteAxisValue(ABS_X);
-    mAbsY = deviceContext.getAbsoluteAxisValue(ABS_Y);
+    mAbsX = deviceContext.getAbsoluteAxisValue(ABS_X) / mAbsXYRatio;
+    mAbsY = deviceContext.getAbsoluteAxisValue(ABS_Y) / mAbsXYRatio;
     mAbsPressure = deviceContext.getAbsoluteAxisValue(ABS_PRESSURE);
     mAbsToolWidth = deviceContext.getAbsoluteAxisValue(ABS_TOOL_WIDTH);
     mAbsDistance = deviceContext.getAbsoluteAxisValue(ABS_DISTANCE);
@@ -49,10 +56,10 @@ void SingleTouchMotionAccumulator::process(const RawEvent& rawEvent) {
     if (rawEvent.type == EV_ABS) {
         switch (rawEvent.code) {
             case ABS_X:
-                mAbsX = rawEvent.value;
+                mAbsX = rawEvent.value / mAbsXYRatio;
                 break;
             case ABS_Y:
-                mAbsY = rawEvent.value;
+                mAbsY = rawEvent.value / mAbsXYRatio;
                 break;
             case ABS_PRESSURE:
                 mAbsPressure = rawEvent.value;
