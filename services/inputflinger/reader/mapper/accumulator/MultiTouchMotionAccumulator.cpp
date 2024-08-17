@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <android-base/properties.h>
+
 // clang-format off
 #include "../Macros.h"
 // clang-format on
@@ -151,6 +153,13 @@ void MultiTouchMotionAccumulator::populateCurrentSlot(
 
 // --- MultiTouchMotionAccumulator::Slot ---
 
+MultiTouchMotionAccumulator::Slot::Slot() {
+    std::string targetDevice = android::base::GetProperty("ro.product.vendor.device", "");
+    if (targetDevice == "meizu21" || targetDevice == "Meizu21Note") {
+        mAbsMtPositionXYRatio = 10;
+    }
+}
+
 ToolType MultiTouchMotionAccumulator::Slot::getToolType() const {
     if (mHaveAbsMtToolType) {
         switch (mAbsMtToolType) {
@@ -168,10 +177,10 @@ ToolType MultiTouchMotionAccumulator::Slot::getToolType() const {
 void MultiTouchMotionAccumulator::Slot::populateAxisValue(int32_t axisCode, int32_t value) {
     switch (axisCode) {
         case ABS_MT_POSITION_X:
-            mAbsMtPositionX = value;
+            mAbsMtPositionX = value / mAbsMtPositionXYRatio;
             break;
         case ABS_MT_POSITION_Y:
-            mAbsMtPositionY = value;
+            mAbsMtPositionY = value / mAbsMtPositionXYRatio;
             break;
         case ABS_MT_TOUCH_MAJOR:
             mAbsMtTouchMajor = value;
