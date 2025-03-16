@@ -166,6 +166,7 @@ void FlagManager::dump(std::string& result) const {
     DUMP_ACONFIG_FLAG(skip_invisible_windows_in_input);
     DUMP_ACONFIG_FLAG(begone_bright_hlg);
     DUMP_ACONFIG_FLAG(window_blur_kawase2);
+    DUMP_ACONFIG_FLAG(single_hop_screenshot);
 
 #undef DUMP_ACONFIG_FLAG
 #undef DUMP_LEGACY_SERVER_FLAG
@@ -259,6 +260,7 @@ FLAG_MANAGER_ACONFIG_FLAG(local_tonemap_screenshots, "debug.sf.local_tonemap_scr
 FLAG_MANAGER_ACONFIG_FLAG(override_trusted_overlay, "");
 FLAG_MANAGER_ACONFIG_FLAG(flush_buffer_slots_to_uncache, "");
 FLAG_MANAGER_ACONFIG_FLAG(force_compile_graphite_renderengine, "");
+FLAG_MANAGER_ACONFIG_FLAG(single_hop_screenshot, "");
 FLAG_MANAGER_ACONFIG_FLAG(true_hdr_screenshots, "debug.sf.true_hdr_screenshots");
 FLAG_MANAGER_ACONFIG_FLAG(display_config_error_hal, "");
 FLAG_MANAGER_ACONFIG_FLAG(connected_display_hdr, "debug.sf.connected_display_hdr");

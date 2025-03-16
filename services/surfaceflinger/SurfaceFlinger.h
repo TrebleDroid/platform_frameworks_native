@@ -885,10 +885,16 @@ private:
             std::optional<OutputCompositionState>& displayState,
             std::vector<std::pair<Layer*, sp<LayerFE>>>& layers);
 
+    ftl::SharedFuture<FenceResult> captureScreenshotLegacy(
+            RenderAreaBuilderVariant, GetLayerSnapshotsFunction,
+            const std::shared_ptr<renderengine::ExternalTexture>&, bool regionSampling,
+            bool grayscale, bool isProtected, bool attachGainmap,
+            const sp<IScreenCaptureListener>&);
+
     ftl::SharedFuture<FenceResult> renderScreenImpl(
             const RenderArea*, const std::shared_ptr<renderengine::ExternalTexture>&,
-            bool regionSampling, bool grayscale, bool isProtected, ScreenCaptureResults&,
-            std::optional<OutputCompositionState>& displayState,
+            bool regionSampling, bool grayscale, bool isProtected, bool attachGainmap,
+            ScreenCaptureResults&, std::optional<OutputCompositionState>& displayState,
             std::vector<std::pair<Layer*, sp<LayerFE>>>& layers);
 
     void readPersistentProperties();
