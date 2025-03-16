@@ -28,6 +28,7 @@
 #include "Utils/FenceUtils.h"
 
 #include <binder/IInterface.h>
+#include <common/FlagManager.h>
 #include <common/trace.h>
 #include <utils/RefBase.h>
 
@@ -126,8 +127,14 @@ status_t TransactionCallbackInvoker::addCallbackHandle(const sp<CallbackHandle>&
     if (surfaceControl) {
         sp<Fence> prevFence = nullptr;
 
-        for (auto& future : handle->previousReleaseFences) {
-            mergeFence(handle->name.c_str(), future.get().value_or(Fence::NO_FENCE), prevFence);
+        if (FlagManager::getInstance().ce_fence_promise()) {
+            for (auto& future : handle->previousReleaseFences) {
+                mergeFence(handle->name.c_str(), future.get().value_or(Fence::NO_FENCE), prevFence);
+            }
+        } else {
+            for (const auto& future : handle->previousSharedReleaseFences) {
+                mergeFence(handle->name.c_str(), future.get().value_or(Fence::NO_FENCE), prevFence);
+            }
         }
 
         handle->previousReleaseFence = prevFence;

@@ -17,6 +17,7 @@
 #define ANDROID_TRANSACTION_TEST_HARNESSES
 
 #include <com_android_graphics_libgui_flags.h>
+#include <common/FlagManager.h>
 #include <ui/DisplayState.h>
 
 #include "LayerTransactionTest.h"
@@ -95,8 +96,12 @@ public:
 #endif // COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(WB_CONSUMER_BASE_OWNS_BQ)
                 t.setDisplayProjection(vDisplay, displayState.orientation,
                                        Rect(displayState.layerStackSpaceRect), Rect(resolution));
-                t.setDisplayLayerStack(vDisplay, layerStack);
-                t.setLayerStack(mirrorSc, layerStack);
+                if (FlagManager::getInstance().ce_fence_promise()) {
+                    t.setDisplayLayerStack(vDisplay, layerStack);
+                    t.setLayerStack(mirrorSc, layerStack);
+                } else {
+                    t.setDisplayLayerStack(vDisplay, ui::DEFAULT_LAYER_STACK);
+                }
                 t.apply();
                 SurfaceComposerClient::Transaction().apply(true);
 
@@ -116,8 +121,10 @@ public:
                 // CompositionEngine::present may attempt to be called on the same
                 // display multiple times. The layerStack is set to invalid here so
                 // that the display is ignored if that scenario occurs.
-                t.setLayerStack(mirrorSc, ui::INVALID_LAYER_STACK);
-                t.apply(true);
+                if (FlagManager::getInstance().ce_fence_promise()) {
+                    t.setLayerStack(mirrorSc, ui::INVALID_LAYER_STACK);
+                    t.apply(true);
+                }
                 SurfaceComposerClient::destroyVirtualDisplay(vDisplay);
                 return sc;
         }

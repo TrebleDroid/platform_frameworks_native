@@ -26,6 +26,7 @@
 
 #include "LayerFE.h"
 #include "SurfaceFlinger.h"
+#include "common/FlagManager.h"
 #include "ui/FenceResult.h"
 
 namespace android {
@@ -82,7 +83,8 @@ LayerFE::~LayerFE() {
     // Ensures that no promise is left unfulfilled before the LayerFE is destroyed.
     // An unfulfilled promise could occur when a screenshot is attempted, but the
     // render area is invalid and there is no memory for the capture result.
-    if (mReleaseFencePromiseStatus == ReleaseFencePromiseStatus::INITIALIZED) {
+    if (FlagManager::getInstance().ce_fence_promise() &&
+        mReleaseFencePromiseStatus == ReleaseFencePromiseStatus::INITIALIZED) {
         setReleaseFence(Fence::NO_FENCE);
     }
 }

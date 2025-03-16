@@ -805,6 +805,54 @@ void Layer::prepareReleaseCallbacks(ftl::Future<FenceResult> futureFenceResult,
     }
 }
 
+void Layer::onLayerDisplayed(ftl::SharedFuture<FenceResult> futureFenceResult,
+                             ui::LayerStack layerStack,
+                             std::function<FenceResult(FenceResult)>&& continuation) {
+    sp<CallbackHandle> ch = findCallbackHandle();
+
+    if (!FlagManager::getInstance().screenshot_fence_preservation() && continuation) {
+        futureFenceResult = ftl::Future(futureFenceResult).then(std::move(continuation)).share();
+    }
+
+    if (ch != nullptr) {
+        ch->previousReleaseCallbackId = mPreviousReleaseCallbackId;
+        ch->previousSharedReleaseFences.emplace_back(std::move(futureFenceResult));
+        ch->name = mName;
+    } else if (FlagManager::getInstance().screenshot_fence_preservation()) {
+        // If we didn't get a release callback yet, e.g. some scenarios when capturing screenshots
+        // asynchronously, then make sure we don't drop the fence.
+        mPreviousReleaseFenceAndContinuations.emplace_back(std::move(futureFenceResult),
+                                                           std::move(continuation));
+        std::vector<FenceAndContinuation> mergedFences;
+        sp<Fence> prevFence = nullptr;
+        // For a layer that's frequently screenshotted, try to merge fences to make sure we don't
+        // grow unbounded.
+        for (const auto& futureAndContinuation : mPreviousReleaseFenceAndContinuations) {
+            auto result = futureAndContinuation.future.wait_for(0s);
+            if (result != std::future_status::ready) {
+                mergedFences.emplace_back(futureAndContinuation);
+                continue;
+            }
+
+            mergeFence(getDebugName(),
+                       futureAndContinuation.chain().get().value_or(Fence::NO_FENCE), prevFence);
+        }
+        if (prevFence != nullptr) {
+            mergedFences.emplace_back(ftl::yield(FenceResult(std::move(prevFence))).share());
+        }
+
+        mPreviousReleaseFenceAndContinuations.swap(mergedFences);
+    }
+
+    if (mBufferInfo.mBuffer) {
+        mPreviouslyPresentedLayerStacks.push_back(layerStack);
+    }
+
+    if (mDrawingState.frameNumber > 0) {
+        mDrawingState.previousFrameNumber = mDrawingState.frameNumber;
+    }
+}
+
 void Layer::releasePendingBuffer(nsecs_t dequeueReadyTime) {
     for (const auto& handle : mDrawingState.callbackHandles) {
         handle->bufferReleaseChannel = mBufferReleaseChannel;
@@ -1117,13 +1165,22 @@ bool Layer::setTransactionCompletedListeners(const std::vector<sp<CallbackHandle
             handle->acquireTimeOrFence = mCallbackHandleAcquireTimeOrFence;
             handle->frameNumber = mDrawingState.frameNumber;
             handle->previousFrameNumber = mDrawingState.previousFrameNumber;
-            if (mPreviousReleaseBufferEndpoint == handle->listener) {
+            if (FlagManager::getInstance().ce_fence_promise() &&
+                mPreviousReleaseBufferEndpoint == handle->listener) {
                 // Add fence from previous screenshot now so that it can be dispatched to the
                 // client.
                 for (auto& [_, future] : mAdditionalPreviousReleaseFences) {
                     handle->previousReleaseFences.emplace_back(std::move(future));
                 }
                 mAdditionalPreviousReleaseFences.clear();
+            } else if (FlagManager::getInstance().screenshot_fence_preservation() &&
+                       mPreviousReleaseBufferEndpoint == handle->listener) {
+                // Add fences from previous screenshots now so that they can be dispatched to the
+                // client.
+                for (const auto& futureAndContinution : mPreviousReleaseFenceAndContinuations) {
+                    handle->previousSharedReleaseFences.emplace_back(futureAndContinution.chain());
+                }
+                mPreviousReleaseFenceAndContinuations.clear();
             }
             // Store so latched time and release fence can be set
             mDrawingState.callbackHandles.push_back(handle);

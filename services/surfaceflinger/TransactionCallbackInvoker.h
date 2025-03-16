@@ -43,6 +43,7 @@ public:
     std::string name;
     sp<Fence> previousReleaseFence;
     std::vector<ftl::Future<FenceResult>> previousReleaseFences;
+    std::vector<ftl::SharedFuture<FenceResult>> previousSharedReleaseFences;
     std::variant<nsecs_t, sp<Fence>> acquireTimeOrFence = -1;
     nsecs_t latchTime = -1;
     std::optional<uint32_t> transformHint = std::nullopt;
