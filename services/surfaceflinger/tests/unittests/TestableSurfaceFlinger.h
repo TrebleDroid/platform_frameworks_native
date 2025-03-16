@@ -472,11 +472,12 @@ public:
         ScreenCaptureResults captureResults;
         auto displayState = std::optional{display->getCompositionDisplay()->getState()};
         auto layers = getLayerSnapshotsFn();
+        auto layerFEs = mFlinger->extractLayerFEs(layers);
 
         return mFlinger->renderScreenImpl(renderArea.get(), buffer, regionSampling,
                                           false /* grayscale */, false /* isProtected */,
                                           false /* attachGainmap */, captureResults, displayState,
-                                          layers);
+                                          layers, layerFEs);
     }
 
     auto getLayerSnapshotsForScreenshotsFn(ui::LayerStack layerStack, uint32_t uid) {
