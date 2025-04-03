@@ -153,7 +153,7 @@ void MultiTouchMotionAccumulator::populateCurrentSlot(
 
 MultiTouchMotionAccumulator::Slot::Slot() {
     std::string targetDevice = android::base::GetProperty("ro.product.vendor.device", "");
-    if (targetDevice == "meizu21" || targetDevice == "Meizu21Note") {
+    if (targetDevice == "meizu21" || targetDevice == "meizu21Pro" || targetDevice == "Meizu21Note") {
         mAbsMtPositionXYRatio = 10;
     }
 }
