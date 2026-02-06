@@ -43,6 +43,7 @@
 
 static bool sCheckedProps = false;
 static bool sAsusFod = false;
+static bool sOplusFod = false;
 
 using aidl::android::hardware::graphics::composer3::Composition;
 using aidl::android::hardware::graphics::composer3::Luts;
@@ -559,6 +560,7 @@ void OutputLayer::writeOutputDependentGeometryStateToHWC(HWC2::Layer* hwcLayer,
     if(!sCheckedProps) {
         sCheckedProps = true;
         sAsusFod = property_get_bool("persist.sys.phh.fod.asus", false);
+        sOplusFod = property_get_bool("persist.vendor.fingerprint.optical.support", false);
     }
 
     if (strstr(getLayerFE().getDebugName(), "UdfpsControllerOverlay#") != nullptr) {
@@ -573,6 +575,9 @@ void OutputLayer::writeOutputDependentGeometryStateToHWC(HWC2::Layer* hwcLayer,
             if (auto error = hwcLayer->setLayerClass(4); error != hal::Error::NONE) {
                 ALOGE("Failed setting Asus layer class");
             }
+        }
+        if (sOplusFod) {
+            z = 0x41000033;
         }
     }
 
